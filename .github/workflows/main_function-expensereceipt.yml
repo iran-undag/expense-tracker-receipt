@@ -11,7 +11,8 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: function-expensereceipt
-  PACKAGE_DIRECTORY: '.'
+  PROJECT_DIRECTORY: '.'
+  PACKAGE_DIRECTORY: './target/azure-functions/function-expensereceipt'
   JAVA_VERSION: '17'
 
 jobs:
@@ -34,7 +35,7 @@ jobs:
       - name: 'Restore Project Dependencies Using Mvn'
         shell: pwsh
         run: |
-          pushd './${{ env.PACKAGE_DIRECTORY }}'
+          pushd './${{ env.PROJECT_DIRECTORY }}'
           mvn clean package
           popd
       
@@ -49,7 +50,7 @@ jobs:
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: 'function-expensereceipt'
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           slot-name: 'Production'
           package: '${{ env.PACKAGE_DIRECTORY }}'
           respect-pom-xml: true

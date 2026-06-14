@@ -69,7 +69,7 @@
                 <artifactId>azure-functions-maven-plugin</artifactId>
                 <version>${azure.functions.maven.plugin.version}</version>
                 <configuration>
-                    <appName>expense-tracker-receipt</appName>
+                    <appName>function-expensereceipt</appName>
                     <resourceGroup>expense-tracker</resourceGroup>
                     <region>eastus</region>
                     <runtime>
