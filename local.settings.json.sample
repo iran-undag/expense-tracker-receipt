@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "AZURE_DOCUMENT_AI_ENDPOINT": "https://your-resource.cognitiveservices.azure.com/",
+    "AZURE_DOCUMENT_AI_KEY": "replace-me"
+  }
+}
