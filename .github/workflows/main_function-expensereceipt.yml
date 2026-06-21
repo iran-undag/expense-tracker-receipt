@@ -10,47 +10,45 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_NAME: function-expensereceipt
-  PROJECT_DIRECTORY: '.'
-  PACKAGE_DIRECTORY: './target/azure-functions/function-expensereceipt'
-  JAVA_VERSION: '17'
+  AZURE_FUNCTIONAPP_NAME: function-expensereceipt # set this to your function app name on Azure
+  PACKAGE_DIRECTORY: '.' # set this to the directory which contains pom.xml file
+  JAVA_VERSION: '17' # set this to the java version to use
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
 
       - name: Setup Java Sdk ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
+        uses: actions/setup-java@v1
+        with: |+
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 'Restore Project Dependencies Using Mvn'
         shell: pwsh
-        run: |
-          pushd './${{ env.PROJECT_DIRECTORY }}'
+        run: |+
+          pushd './${{ env.PACKAGE_DIRECTORY }}'
           mvn clean package
           popd
       
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BBDC98AC87274011AFFEB7CCDF1946A8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E7B3029FC2D64A0C83F81D0E1B75F449 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E8A91C09587E4CCF95AED561CAFDACFC }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_40593A1056D34A0BACA6887637B30DCE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6A8D91E0122D4AF7BC5ED3B94987DEFF }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F23440F0344848B5A30CB1B272CF4A06 }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
         id: fa
         with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          app-name: 'function-expensereceipt'
           slot-name: 'Production'
           package: '${{ env.PACKAGE_DIRECTORY }}'
           respect-pom-xml: true
