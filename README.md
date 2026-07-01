@@ -49,6 +49,8 @@ Required settings:
 Start the function locally:
 
 ```bash
+export JAVA_HOME=/usr/lib/jvm/<your-java-version>
+
 ./mvnw clean package
 ./mvnw azure-functions:run
 ```
