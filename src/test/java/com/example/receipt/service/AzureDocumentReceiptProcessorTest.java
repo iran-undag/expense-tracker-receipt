@@ -66,9 +66,17 @@ class AzureDocumentReceiptProcessorTest {
         when(dateField.getValueDate()).thenReturn(transactionDate);
         fields.put("TransactionDate", dateField);
 
-        DocumentField categoryField = mock(DocumentField.class);
-        when(categoryField.getContent()).thenReturn("Food");
-        fields.put("Category", categoryField);
+        DocumentField receiptTypeField = mock(DocumentField.class);
+        when(receiptTypeField.getContent()).thenReturn("Meal");
+        fields.put("ReceiptType", receiptTypeField);
+
+        DocumentField itemsField = mock(DocumentField.class);
+        DocumentField itemField = mock(DocumentField.class);
+        DocumentField itemDescriptionField = mock(DocumentField.class);
+        when(itemDescriptionField.getContent()).thenReturn("Latte");
+        when(itemField.getValueMap()).thenReturn(Map.of("Description", itemDescriptionField));
+        when(itemsField.getValueList()).thenReturn(List.of(itemField));
+        fields.put("Items", itemsField);
 
         when(analyzedDocument.getFields()).thenReturn(fields);
 
@@ -78,7 +86,9 @@ class AzureDocumentReceiptProcessorTest {
         assertEquals("Starbucks", response.getDescription());
         assertEquals(0, new BigDecimal("15.50").compareTo(response.getAmount()));
         assertEquals("2026-05-21", response.getDate());
-        assertEquals("Food", response.getCategory());
+        assertEquals("Other", response.getCategory());
+        assertEquals("Meal", response.getReceiptType());
+        assertEquals(List.of("Latte"), response.getItemDescriptions());
     }
 
     @Test
@@ -98,7 +108,7 @@ class AzureDocumentReceiptProcessorTest {
         assertNotNull(response);
         assertEquals("Unknown Merchant", response.getDescription());
         assertEquals(0, new BigDecimal("25.75").compareTo(response.getAmount()));
-        assertEquals("General", response.getCategory());
+        assertEquals("Other", response.getCategory());
     }
 
     @Test
@@ -117,6 +127,6 @@ class AzureDocumentReceiptProcessorTest {
         assertEquals("Unknown Merchant", response.getDescription());
         assertEquals(BigDecimal.ZERO, response.getAmount());
         assertEquals(LocalDate.now().toString(), response.getDate());
-        assertEquals("General", response.getCategory());
+        assertEquals("Other", response.getCategory());
     }
 }

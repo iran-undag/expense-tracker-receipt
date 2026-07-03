@@ -15,7 +15,9 @@ import com.example.receipt.exception.ReceiptProcessingException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AzureDocumentReceiptProcessor implements ReceiptProcessor {
 
@@ -51,7 +53,9 @@ public class AzureDocumentReceiptProcessor implements ReceiptProcessor {
                 getStringField(fields, "MerchantName", "Unknown Merchant"),
                 getTotal(fields),
                 getDate(fields).toString(),
-                getStringField(fields, "Category", "General"));
+                "Other",
+                getStringField(fields, "ReceiptType", null),
+                getItemDescriptions(fields));
     }
 
     private String getStringField(Map<String, DocumentField> fields, String fieldName, String defaultValue) {
@@ -88,5 +92,23 @@ public class AzureDocumentReceiptProcessor implements ReceiptProcessor {
 
         LocalDate date = fields.get("TransactionDate").getValueDate();
         return date == null ? LocalDate.now() : date;
+    }
+
+    private List<String> getItemDescriptions(Map<String, DocumentField> fields) {
+        if (fields == null || !fields.containsKey("Items") || fields.get("Items") == null) {
+            return List.of();
+        }
+
+        List<DocumentField> items = fields.get("Items").getValueList();
+        if (items == null) {
+            return List.of();
+        }
+
+        return items.stream()
+                .map(DocumentField::getValueMap)
+                .filter(Objects::nonNull)
+                .map(item -> getStringField(item, "Description", null))
+                .filter(description -> description != null && !description.isBlank())
+                .toList();
     }
 }
